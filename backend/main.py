@@ -3,7 +3,7 @@ import serial
 import json
 import time
 import threading
-import asyncio 
+import asyncio
 
 app = FastAPI(title="Sistema de Monitoreo Ambiental", version="1.0.0")
 
@@ -14,6 +14,7 @@ def leer_arduino():
     try:
         with serial.Serial(ARDUINO_PORT, BAUDRATE, timeout=1) as ser:
             linea = ser.readline().decode('utf-8').strip()
+            print(f"[DEBUG] Recibido desde Arduino: {linea}")  # <-- Agrega este print
             if linea.startswith("{") and linea.endswith("}"):
                 return json.loads(linea)
     except Exception as e:
