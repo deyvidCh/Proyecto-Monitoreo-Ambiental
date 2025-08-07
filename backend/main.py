@@ -1,8 +1,8 @@
 import serial
 from fastapi import FastAPI
 
-app = FastAPI()
+app = FastAPI(title="Sistema de Monitoreo Ambiental", version="1.0.0")
 
 @app.get("/")
-def read_root():
-    return {"message": "Hola Mundo en Backend"}
+async def root():
+    return {"message": "Sistema de Monitoreo Ambiental - Backend API"}
