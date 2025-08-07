@@ -1,94 +1,51 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minimalista - Monitoreo Ambiental</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Sistema de Monitoreo</h1>
-            <p>Dashboard Minimalista - Monitoreo Ambiental</p>
-        </div>
-        <div class="status-bar">
-            <div class="status-item">
-                <div class="status-indicator" id="connectionStatus"></div>
-                <span class="status-text">Estado de Conexión</span>
-            </div>
-            <div class="status-item">
-                <div class="status-indicator" id="sensorStatus"></div>
-                <span class="status-text">Estado del Sensor</span>
-            </div>
-            <div class="status-item">
-                <span class="status-text">Cliente ID: <span id="clientId">--</span></span>
-            </div>
-            <div class="status-item">
-                <span class="status-text">Última Actualización: <span id="lastUpdate">--</span></span>
-            </div>
-        </div>
-        <div class="main-content">
-            <div class="card">
-                <h2>Temperatura</h2>
-                <div class="main-value" id="currentTemperature">--</div>
-                <div class="value-unit">°C</div>
-                <div class="chart-container">
-                    <canvas id="temperatureChart"></canvas>
-                </div>
-            </div>
-            <div class="card">
-                <h2>Humedad</h2>
-                <div class="main-value" id="currentHumidity">--</div>
-                <div class="value-unit">%</div>
-                <div class="chart-container">
-                    <canvas id="humidityChart"></canvas>
-                </div>
-            </div>
-            <div class="card">
-                <h2>Calidad de Aire</h2>
-                <div class="main-value" id="currentAirQuality">--</div>
-                <div class="value-unit">Valor MQ135</div>
-                <div class="chart-container">
-                    <canvas id="airQualityChart"></canvas>
-                </div>
-            </div>
-            <div class="card">
-                <h2>Información del Sistema</h2>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Dirección IPv6:</div>
-                        <div class="info-value" id="ipv6Address">--</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Timestamp:</div>
-                        <div class="info-value" id="timestamp">--</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Cliente ID:</div>
-                        <div class="info-value" id="clientIdDisplay">--</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Estado:</div>
-                        <div class="info-value" id="systemStatus">Conectando...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="controls">
-            <div class="control-buttons">
-                <button class="btn" id="startBtn">Iniciar Monitoreo</button>
-                <button class="btn" id="stopBtn">Detener Monitoreo</button>
-                <button class="btn" id="clearBtn">Limpiar Datos</button>
-                <button class="btn" id="exportBtn">Exportar Datos</button>
-            </div>
-        </div>
-        <div class="history">
-            <h2>Historial de Lecturas</h2>
-            <div class="history-list" id="historyList"></div>
+<div class="main-content">
+    <!-- Tarjeta de Temperatura -->
+    <div class="card">
+        <h2>Temperatura</h2>
+        <div class="main-value" id="currentTemperature">--</div>
+        <div class="value-unit">°C</div>
+        <div class="chart-container">
+            <canvas id="temperatureChart"></canvas>
         </div>
     </div>
-</body>
-</html>
+    <!-- Tarjeta de Humedad -->
+    <div class="card">
+        <h2>Humedad</h2>
+        <div class="main-value" id="currentHumidity">--</div>
+        <div class="value-unit">%</div>
+        <div class="chart-container">
+            <canvas id="humidityChart"></canvas>
+        </div>
+    </div>
+    <!-- Tarjeta de Calidad de Aire -->
+    <div class="card">
+        <h2>Calidad de Aire</h2>
+        <div class="main-value" id="currentAirQuality">--</div>
+        <div class="value-unit">Valor MQ135</div>
+        <div class="chart-container">
+            <canvas id="airQualityChart"></canvas>
+        </div>
+    </div>
+    <!-- Tarjeta de Información del Sistema -->
+    <div class="card">
+        <h2>Información del Sistema</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Dirección IPv6:</div>
+                <div class="info-value" id="ipv6Address">--</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Timestamp:</div>
+                <div class="info-value" id="timestamp">--</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Cliente ID:</div>
+                <div class="info-value" id="clientIdDisplay">--</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Estado:</div>
+                <div class="info-value" id="systemStatus">Conectando...</div>
+            </div>
+        </div>
+    </div>
+</div>
