@@ -6,16 +6,14 @@
     <title>Dashboard Minimalista - Monitoreo Ambiental</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <h1>Sistema de Monitoreo</h1>
-            <p>Dashboard Minimalista - Monitoreo Ambiental</p>
+            <p>Monitoreo Ambiental</p>
         </div>
-        <!-- Barra de Estado -->
         <div class="status-bar">
             <div class="status-item">
                 <div class="status-indicator" id="connectionStatus"></div>
@@ -32,9 +30,19 @@
                 <span class="status-text">Última Actualización: <span id="lastUpdate">--</span></span>
             </div>
         </div>
-        <!-- Contenido Principal -->
+<!-- Controles -->
+        <div class="controls">
+            <h2>Controles del Sistema</h2>
+            <div class="control-buttons">
+                <button class="btn" onclick="startMonitoring()">Iniciar Monitoreo</button>
+                <button class="btn" onclick="stopMonitoring()">Detener Monitoreo</button>
+                <button class="btn" onclick="clearData()">Limpiar Datos</button>
+                <button class="btn" onclick="exportData()">Exportar Datos</button>
+            </div>
+        </div>
+        <!-- Tarjetas principales -->
         <div class="main-content">
-            <!-- Tarjeta de Temperatura -->
+            <!-- Temperatura -->
             <div class="card">
                 <h2>Temperatura</h2>
                 <div class="main-value" id="currentTemperature">--</div>
@@ -47,7 +55,7 @@
                     <div class="stat-item"><div class="stat-value" id="readingsCountTemp">--</div><div class="stat-label">Total Lecturas</div></div>
                 </div>
             </div>
-            <!-- Tarjeta de Humedad -->
+            <!-- Humedad -->
             <div class="card">
                 <h2>Humedad</h2>
                 <div class="main-value" id="currentHumidity">--</div>
@@ -60,7 +68,7 @@
                     <div class="stat-item"><div class="stat-value" id="readingsCountHum">--</div><div class="stat-label">Total Lecturas</div></div>
                 </div>
             </div>
-            <!-- Tarjeta de Calidad de Aire -->
+            <!-- Calidad de Aire -->
             <div class="card">
                 <h2>Calidad de Aire</h2>
                 <div class="main-value" id="currentAirQuality">--</div>
@@ -73,34 +81,25 @@
                     <div class="stat-item"><div class="stat-value" id="readingsCountAir">--</div><div class="stat-label">Total Lecturas</div></div>
                 </div>
             </div>
-            <!-- Tarjeta de Información del Sistema -->
-            <div class="card">
-                <h2>Información del Sistema</h2>
-                <div class="info-grid">
-                    <div class="info-item"><div class="info-label">Dirección IPv6:</div><div class="info-value" id="ipv6Address">--</div></div>
-                    <div class="info-item"><div class="info-label">Timestamp:</div><div class="info-value" id="timestamp">--</div></div>
-                    <div class="info-item"><div class="info-label">Cliente ID:</div><div class="info-value" id="clientIdDisplay">--</div></div>
-                    <div class="info-item"><div class="info-label">Estado:</div><div class="info-value" id="systemStatus">Conectando...</div></div>
-                </div>
+        </div>
+
+        <!-- Información del Sistema debajo de las tarjetas -->
+        <div class="card system-info-card">
+            <h2>Información del Sistema</h2>
+            <div class="info-grid">
+                <div class="info-item"><div class="info-label">Dirección IPv6:</div><div class="info-value" id="ipv6Address">--</div></div>
+                <div class="info-item"><div class="info-label">Timestamp:</div><div class="info-value" id="timestamp">--</div></div>
+                <div class="info-item"><div class="info-label">Cliente ID:</div><div class="info-value" id="clientIdDisplay">--</div></div>
+                <div class="info-item"><div class="info-label">Estado:</div><div class="info-value" id="systemStatus">Conectando...</div></div>
             </div>
         </div>
-        <!-- Controles -->
-        <div class="controls">
-            <h2>Controles del Sistema</h2>
-            <div class="control-buttons">
-                <button class="btn" onclick="startMonitoring()">Iniciar Monitoreo</button>
-                <button class="btn" onclick="stopMonitoring()">Detener Monitoreo</button>
-                <button class="btn" onclick="clearData()">Limpiar Datos</button>
-                <button class="btn" onclick="exportData()">Exportar Datos</button>
-            </div>
-        </div>
+
         <!-- Historial -->
         <div class="history">
             <h2>Historial de Lecturas</h2>
             <div class="history-list" id="historyList"></div>
         </div>
     </div>
-
     <script>
         let temperatureChart, humidityChart, airQualityChart;
         let ws = null;
@@ -108,6 +107,7 @@
         let isMonitoring = false;
         let clientId = Math.random().toString(36).substr(2, 9);
         let historyFull = [];
+        let shouldReconnect = false;
 
         function initializeCharts() {
             temperatureChart = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
@@ -149,7 +149,9 @@
             ws.onclose = function() {
                 updateConnectionStatus(false);
                 document.getElementById('sensorStatus').classList.remove('connected');
-                setTimeout(connectWebSocket, 3000);
+                if (shouldReconnect) {
+                    setTimeout(connectWebSocket, 3000);
+                }
             };
             ws.onmessage = function(event) {
                 try {
@@ -233,6 +235,7 @@
         function startMonitoring() {
             if (!isMonitoring) {
                 isMonitoring = true;
+                shouldReconnect = true;
                 connectWebSocket();
                 document.querySelector('.btn').classList.add('active');
             }
@@ -240,6 +243,7 @@
         function stopMonitoring() {
             if (isMonitoring) {
                 isMonitoring = false;
+                shouldReconnect = false;
                 if (ws) ws.close();
                 document.querySelector('.btn').classList.remove('active');
             }
