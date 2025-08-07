@@ -49,3 +49,79 @@
         </div>
     </div>
 </div>
+<script>
+    // Variables globales
+    let ws = null;
+    let isMonitoring = false;
+    let clientId = Math.random().toString(36).substr(2, 9);
+
+    // Función para conectar WebSocket
+    function connectWebSocket() {
+        const wsUrl = `ws://localhost:8000/ws`;
+        ws = new WebSocket(wsUrl);
+
+        ws.onopen = function() {
+            updateConnectionStatus(true);
+            document.getElementById('sensorStatus').classList.add('connected');
+        };
+        ws.onclose = function() {
+            updateConnectionStatus(false);
+            document.getElementById('sensorStatus').classList.remove('connected');
+            setTimeout(connectWebSocket, 3000);
+        };
+        ws.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                updateUI(data);
+            } catch (error) {}
+        };
+    }
+
+    // Función para actualizar valores principales de las tarjetas
+    function updateUI(data) {
+        // El backend debe enviar los campos: temperature, humidity, air_quality, ipv6_address, timestamp
+        document.getElementById('currentTemperature').textContent = data.temperature !== null ? data.temperature.toFixed(1) : '--';
+        document.getElementById('currentHumidity').textContent = data.humidity !== null ? data.humidity.toFixed(1) : '--';
+        document.getElementById('currentAirQuality').textContent = data.air_quality !== null ? data.air_quality : '--';
+        document.getElementById('ipv6Address').textContent = data.ipv6_address || '--';
+        document.getElementById('timestamp').textContent = data.timestamp ? new Date(data.timestamp).toLocaleString('es-ES') : '--';
+        document.getElementById('clientIdDisplay').textContent = clientId;
+        document.getElementById('clientId').textContent = clientId;
+        document.getElementById('systemStatus').textContent = 'Conectado';
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+    }
+
+    function updateConnectionStatus(connected) {
+        const statusIndicator = document.getElementById('connectionStatus');
+        const systemStatus = document.getElementById('systemStatus');
+        if (connected) {
+            statusIndicator.classList.add('connected');
+            systemStatus.textContent = 'Conectado';
+            systemStatus.style.color = '#10b981';
+        } else {
+            statusIndicator.classList.remove('connected');
+            systemStatus.textContent = 'Desconectado';
+            systemStatus.style.color = '#ef4444';
+        }
+    }
+
+    // Eventos de botones (puedes dejar solo el básico para iniciar)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('startBtn').onclick = function() {
+            if (!isMonitoring) {
+                isMonitoring = true;
+                connectWebSocket();
+                this.classList.add('active');
+            }
+        };
+        document.getElementById('stopBtn').onclick = function() {
+            if (isMonitoring) {
+                isMonitoring = false;
+                if (ws) ws.close();
+                document.getElementById('startBtn').classList.remove('active');
+            }
+        };
+        updateConnectionStatus(false);
+        document.getElementById('sensorStatus').classList.remove('connected');
+    });
+</script>
