@@ -67,17 +67,24 @@ def get_local_ipv6_address():
 
 
 def leer_arduino_en_hilo():
+    """
+    Función que corre en un hilo separado para leer datos del Arduino y transmitirlos por WebSocket.
+    Actualiza la variable global 'ultimo_dato' y transmite el JSON a cada cliente conectado.
+    """
     global ultimo_dato
     while True:
         dato = leer_arduino()
         ultimo_dato = dato
+
         for client in connected_clients.copy():
             try:
                 if dato["temperature"] is not None:
                     asyncio.run(client.send_text(json.dumps(dato)))
-            except Exception:
+            except Exception as e:
+                print(f"[WARN] Cliente desconectado o error de envío: {e}")
                 connected_clients.remove(client)
-        time.sleep(1)
+
+        time.sleep(1)  
 
 ultimo_dato = {
     "temperature": None,
@@ -86,6 +93,7 @@ ultimo_dato = {
     "timestamp": "",
     "ipv6_address": ""
 }
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
