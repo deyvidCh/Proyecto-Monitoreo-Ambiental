@@ -67,13 +67,11 @@ def get_local_ipv6_address():
 
 
 def leer_arduino_en_hilo():
-    """
-    Función que corre en un hilo separado para leer datos del Arduino y transmitirlos por WebSocket.
-    Actualiza la variable global 'ultimo_dato' y transmite el JSON a cada cliente conectado.
-    """
     global ultimo_dato
+    ipv6 = get_local_ipv6_address()
     while True:
         dato = leer_arduino()
+        dato["ipv6_address"] = ipv6  
         ultimo_dato = dato
 
         for client in connected_clients.copy():
