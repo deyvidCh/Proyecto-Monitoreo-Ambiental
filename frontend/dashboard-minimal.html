@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Minimalista - Monitoreo Ambiental</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
             <h1>Sistema de Monitoreo</h1>
             <p>Dashboard Minimalista - Monitoreo Ambiental</p>
         </div>
-        <!-- Barra de estado (importante para mostrar conexión) -->
+        <!-- Barra de Estado -->
         <div class="status-bar">
             <div class="status-item">
                 <div class="status-indicator" id="connectionStatus"></div>
@@ -30,66 +32,116 @@
                 <span class="status-text">Última Actualización: <span id="lastUpdate">--</span></span>
             </div>
         </div>
-
+        <!-- Contenido Principal -->
         <div class="main-content">
             <!-- Tarjeta de Temperatura -->
             <div class="card">
                 <h2>Temperatura</h2>
                 <div class="main-value" id="currentTemperature">--</div>
                 <div class="value-unit">°C</div>
+                <div class="chart-container"><canvas id="temperatureChart"></canvas></div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-value" id="minTemperature">--</div><div class="stat-label">Temp. Mínima</div></div>
+                    <div class="stat-item"><div class="stat-value" id="maxTemperature">--</div><div class="stat-label">Temp. Máxima</div></div>
+                    <div class="stat-item"><div class="stat-value" id="avgTemperature">--</div><div class="stat-label">Promedio</div></div>
+                    <div class="stat-item"><div class="stat-value" id="readingsCountTemp">--</div><div class="stat-label">Total Lecturas</div></div>
+                </div>
             </div>
             <!-- Tarjeta de Humedad -->
             <div class="card">
                 <h2>Humedad</h2>
                 <div class="main-value" id="currentHumidity">--</div>
                 <div class="value-unit">%</div>
+                <div class="chart-container"><canvas id="humidityChart"></canvas></div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-value" id="minHumidity">--</div><div class="stat-label">Humedad Mínima</div></div>
+                    <div class="stat-item"><div class="stat-value" id="maxHumidity">--</div><div class="stat-label">Humedad Máxima</div></div>
+                    <div class="stat-item"><div class="stat-value" id="avgHumidity">--</div><div class="stat-label">Promedio</div></div>
+                    <div class="stat-item"><div class="stat-value" id="readingsCountHum">--</div><div class="stat-label">Total Lecturas</div></div>
+                </div>
             </div>
             <!-- Tarjeta de Calidad de Aire -->
             <div class="card">
                 <h2>Calidad de Aire</h2>
                 <div class="main-value" id="currentAirQuality">--</div>
                 <div class="value-unit">Valor MQ135</div>
+                <div class="chart-container"><canvas id="airQualityChart"></canvas></div>
+                <div class="stats-grid">
+                    <div class="stat-item"><div class="stat-value" id="minAirQuality">--</div><div class="stat-label">Mínimo</div></div>
+                    <div class="stat-item"><div class="stat-value" id="maxAirQuality">--</div><div class="stat-label">Máximo</div></div>
+                    <div class="stat-item"><div class="stat-value" id="avgAirQuality">--</div><div class="stat-label">Promedio</div></div>
+                    <div class="stat-item"><div class="stat-value" id="readingsCountAir">--</div><div class="stat-label">Total Lecturas</div></div>
+                </div>
             </div>
             <!-- Tarjeta de Información del Sistema -->
             <div class="card">
                 <h2>Información del Sistema</h2>
                 <div class="info-grid">
-                    <div class="info-item">
-                        <div class="info-label">Dirección IPv6:</div>
-                        <div class="info-value" id="ipv6Address">--</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Timestamp:</div>
-                        <div class="info-value" id="timestamp">--</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Cliente ID:</div>
-                        <div class="info-value" id="clientIdDisplay">--</div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Estado:</div>
-                        <div class="info-value" id="systemStatus">Conectando...</div>
-                    </div>
+                    <div class="info-item"><div class="info-label">Dirección IPv6:</div><div class="info-value" id="ipv6Address">--</div></div>
+                    <div class="info-item"><div class="info-label">Timestamp:</div><div class="info-value" id="timestamp">--</div></div>
+                    <div class="info-item"><div class="info-label">Cliente ID:</div><div class="info-value" id="clientIdDisplay">--</div></div>
+                    <div class="info-item"><div class="info-label">Estado:</div><div class="info-value" id="systemStatus">Conectando...</div></div>
                 </div>
             </div>
         </div>
-
-        <!-- Botones básicos -->
+        <!-- Controles -->
         <div class="controls">
-            <button class="btn" id="startBtn">Iniciar Monitoreo</button>
-            <button class="btn" id="stopBtn">Detener Monitoreo</button>
+            <h2>Controles del Sistema</h2>
+            <div class="control-buttons">
+                <button class="btn" onclick="startMonitoring()">Iniciar Monitoreo</button>
+                <button class="btn" onclick="stopMonitoring()">Detener Monitoreo</button>
+                <button class="btn" onclick="clearData()">Limpiar Datos</button>
+                <button class="btn" onclick="exportData()">Exportar Datos</button>
+            </div>
+        </div>
+        <!-- Historial -->
+        <div class="history">
+            <h2>Historial de Lecturas</h2>
+            <div class="history-list" id="historyList"></div>
         </div>
     </div>
 
     <script>
+        let temperatureChart, humidityChart, airQualityChart;
         let ws = null;
+        let temperatureHistory = [], humidityHistory = [], airQualityHistory = [];
         let isMonitoring = false;
         let clientId = Math.random().toString(36).substr(2, 9);
+        let historyFull = [];
+
+        function initializeCharts() {
+            temperatureChart = new Chart(document.getElementById('temperatureChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{
+                    label: 'Temperatura (°C)', data: [], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', borderWidth:2, fill:true, tension:0.4,
+                    pointBackgroundColor:'#ef4444', pointBorderColor:'#fff', pointBorderWidth:2, pointRadius:4 }] },
+                options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+                    scales:{ x:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{color:'#a0a0a0'}}, y:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{color:'#a0a0a0'}} }
+                }
+            });
+            humidityChart = new Chart(document.getElementById('humidityChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{
+                    label: 'Humedad (%)', data: [], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth:2, fill:true, tension:0.4,
+                    pointBackgroundColor:'#10b981', pointBorderColor:'#fff', pointBorderWidth:2, pointRadius:4 }] },
+                options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+                    scales:{ x:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{color:'#a0a0a0'}}, y:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{color:'#a0a0a0'}} }
+                }
+            });
+            airQualityChart = new Chart(document.getElementById('airQualityChart').getContext('2d'), {
+                type: 'line',
+                data: { labels: [], datasets: [{
+                    label: 'Calidad de Aire', data: [], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', borderWidth:2, fill:true, tension:0.4,
+                    pointBackgroundColor:'#6366f1', pointBorderColor:'#fff', pointBorderWidth:2, pointRadius:4 }] },
+                options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+                    scales:{ x:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{color:'#a0a0a0'}}, y:{grid:{color:'rgba(255,255,255,0.1)'},ticks:{color:'#a0a0a0'}} }
+                }
+            });
+        }
 
         function connectWebSocket() {
             const wsUrl = `ws://localhost:8000/ws`;
             ws = new WebSocket(wsUrl);
-
             ws.onopen = function() {
                 updateConnectionStatus(true);
                 document.getElementById('sensorStatus').classList.add('connected');
@@ -97,7 +149,7 @@
             ws.onclose = function() {
                 updateConnectionStatus(false);
                 document.getElementById('sensorStatus').classList.remove('connected');
-                setTimeout(connectWebSocket, 3000); // Reconexión automática
+                setTimeout(connectWebSocket, 3000);
             };
             ws.onmessage = function(event) {
                 try {
@@ -108,15 +160,61 @@
         }
 
         function updateUI(data) {
-            document.getElementById('currentTemperature').textContent = data.temperature !== null ? data.temperature.toFixed(1) : '--';
-            document.getElementById('currentHumidity').textContent = data.humidity !== null ? data.humidity.toFixed(1) : '--';
-            document.getElementById('currentAirQuality').textContent = data.air_quality !== null ? data.air_quality : '--';
+            const temperature = data.temperature || 0;
+            const humidity = data.humidity || 0;
+            const airQuality = data.air_quality || 0;
+            const now = new Date();
+
+            document.getElementById('currentTemperature').textContent = temperature.toFixed(1);
+            document.getElementById('currentHumidity').textContent = humidity.toFixed(1);
+            document.getElementById('currentAirQuality').textContent = airQuality;
+
             document.getElementById('ipv6Address').textContent = data.ipv6_address || '--';
-            document.getElementById('timestamp').textContent = data.timestamp ? new Date(data.timestamp).toLocaleString('es-ES') : '--';
+            document.getElementById('timestamp').textContent = now.toLocaleString('es-ES');
             document.getElementById('clientIdDisplay').textContent = clientId;
             document.getElementById('clientId').textContent = clientId;
             document.getElementById('systemStatus').textContent = 'Conectado';
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+
+            updateStatsAndChart(temperature, temperatureHistory, temperatureChart, 'minTemperature', 'maxTemperature', 'avgTemperature', 'readingsCountTemp');
+            updateStatsAndChart(humidity, humidityHistory, humidityChart, 'minHumidity', 'maxHumidity', 'avgHumidity', 'readingsCountHum');
+            updateStatsAndChart(airQuality, airQualityHistory, airQualityChart, 'minAirQuality', 'maxAirQuality', 'avgAirQuality', 'readingsCountAir');
+
+            updateHistory(now, temperature, humidity, airQuality);
+
+            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString();
+            document.getElementById('sensorStatus').classList.add('connected');
+        }
+
+        function updateStatsAndChart(value, historyArr, chart, minId, maxId, avgId, countId) {
+            const maxDataPoints = 50;
+            historyArr.push(value);
+            if (historyArr.length > maxDataPoints) historyArr.shift();
+            if (chart.data.labels.length >= maxDataPoints) chart.data.labels.shift();
+            chart.data.labels.push(new Date().toLocaleTimeString());
+            chart.data.datasets[0].data = [...historyArr];
+            chart.update('none');
+            if (historyArr.length > 0) {
+                const min = Math.min(...historyArr);
+                const max = Math.max(...historyArr);
+                const avg = historyArr.reduce((a,b)=>a+b,0)/historyArr.length;
+                document.getElementById(minId).textContent = min.toFixed(1);
+                document.getElementById(maxId).textContent = max.toFixed(1);
+                document.getElementById(avgId).textContent = avg.toFixed(1);
+                document.getElementById(countId).textContent = historyArr.length;
+            }
+        }
+
+        function updateHistory(now, temperature, humidity, airQuality) {
+            historyFull.unshift({time: now.toLocaleTimeString(), temperature, humidity, airQuality});
+            if (historyFull.length > 50) historyFull.pop();
+
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = historyFull.map(item => `
+                <div class="history-item">
+                    <span class="history-time">${item.time}</span>
+                    <span class="history-value">Temp: ${item.temperature} °C | Hum: ${item.humidity} % | Calidad Aire: ${item.airQuality}</span>
+                </div>
+            `).join('');
         }
 
         function updateConnectionStatus(connected) {
@@ -132,22 +230,54 @@
                 systemStatus.style.color = '#ef4444';
             }
         }
+        function startMonitoring() {
+            if (!isMonitoring) {
+                isMonitoring = true;
+                connectWebSocket();
+                document.querySelector('.btn').classList.add('active');
+            }
+        }
+        function stopMonitoring() {
+            if (isMonitoring) {
+                isMonitoring = false;
+                if (ws) ws.close();
+                document.querySelector('.btn').classList.remove('active');
+            }
+        }
+        function clearData() {
+            temperatureHistory = [];
+            humidityHistory = [];
+            airQualityHistory = [];
+            historyFull = [];
+            [temperatureChart, humidityChart, airQualityChart].forEach(chart => {
+                chart.data.labels = [];
+                chart.data.datasets[0].data = [];
+                chart.update();
+            });
+            ['minTemperature','maxTemperature','avgTemperature','readingsCountTemp','minHumidity','maxHumidity','avgHumidity','readingsCountHum','minAirQuality','maxAirQuality','avgAirQuality','readingsCountAir'].forEach(id=>{
+                document.getElementById(id).textContent = '--';
+            });
+            document.getElementById('historyList').innerHTML = '';
+        }
+        function exportData() {
+            const data = {
+                history: historyFull,
+                temperature: temperatureHistory,
+                humidity: humidityHistory,
+                air_quality: airQualityHistory,
+                timestamp: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sensor-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('startBtn').onclick = function() {
-                if (!isMonitoring) {
-                    isMonitoring = true;
-                    connectWebSocket();
-                    this.classList.add('active');
-                }
-            };
-            document.getElementById('stopBtn').onclick = function() {
-                if (isMonitoring) {
-                    isMonitoring = false;
-                    if (ws) ws.close();
-                    document.getElementById('startBtn').classList.remove('active');
-                }
-            };
+            initializeCharts();
             updateConnectionStatus(false);
             document.getElementById('sensorStatus').classList.remove('connected');
         });
