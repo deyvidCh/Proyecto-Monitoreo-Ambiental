@@ -1,3 +1,4 @@
+import serial
 from fastapi import FastAPI
 
 app = FastAPI()
