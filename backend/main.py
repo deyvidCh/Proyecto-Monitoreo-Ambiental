@@ -4,6 +4,8 @@ import json
 import time
 import threading
 import asyncio
+import socket
+import ipaddress
 
 app = FastAPI(title="Sistema de Monitoreo Ambiental", version="1.0.0")
 
@@ -38,6 +40,31 @@ async def get_data():
     return data
 
 connected_clients = []
+
+def get_local_ipv6_address():
+    try:
+        hostname = socket.gethostname()
+        addrinfo = socket.getaddrinfo(hostname, None, socket.AF_INET6)
+        for addr_info in addrinfo:
+            ipv6_addr = addr_info[4][0]
+            try:
+                ipaddress.IPv6Address(ipv6_addr)
+                if ipv6_addr.startswith('fe80::'):
+                    return ipv6_addr
+            except ipaddress.AddressValueError:
+                continue
+        for addr_info in addrinfo:
+            ipv6_addr = addr_info[4][0]
+            try:
+                ipaddress.IPv6Address(ipv6_addr)
+                return ipv6_addr
+            except ipaddress.AddressValueError:
+                continue
+        return "::1"
+    except Exception as e:
+        print(f"Error obteniendo IPv6 local: {e}")
+        return "fe80::1a2b:3c4d:5e6f:7890"
+
 
 def leer_arduino_en_hilo():
     global ultimo_dato
